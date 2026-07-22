@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function owns(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function validUserDoc() {
+      return request.resource.data.keys().hasOnly([
+        'createdAt',
+        'username',
+        'burdensReleased',
+        'memberSince',
+        'settings',
+        'deliveryInfo',
+        'splashRotationIndex'
+      ]);
+    }
+
+    // Public app content. Seed these with trusted tooling, not mobile clients.
+    match /app_config/{doc}     { allow read: if true; allow write: if false; }
+    match /scriptures/{doc}     { allow read: if true; allow write: if false; }
+    match /breath_quotes/{doc}  { allow read: if true; allow write: if false; }
+    match /release_quotes/{doc} { allow read: if true; allow write: if false; }
+    match /products/{doc}       { allow read: if true; allow write: if false; }
+    match /faqs/{doc}           { allow read: if true; allow write: if false; }
+    match /legal/{doc}          { allow read: if true; allow write: if false; }
+
+    // Per-device anonymous user data. Burden text is intentionally not allowed.
+    match /users/{userId} {
+      allow read, delete: if owns(userId);
+      allow create, update: if owns(userId) && validUserDoc();
+
+      match /notifications/{doc} {
+        allow read, create, update, delete: if owns(userId);
+      }
+
+      match /cart/{doc} {
+        allow read, create, update, delete: if owns(userId);
+      }
+
+      match /orders/{doc} {
+        allow read, create: if owns(userId);
+        allow update, delete: if false;
+      }
+
+      match /donations/{doc} {
+        allow read, create: if owns(userId);
+        allow update, delete: if false;
+      }
+    }
+  }
+}

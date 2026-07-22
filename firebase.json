@@ -1,0 +1,25 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "carest-app-df202",
+          "appId": "1:610668087496:android:b6740859f20a9f81e93dfd",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "carest-app-df202",
+          "configurations": {
+            "android": "1:610668087496:android:b6740859f20a9f81e93dfd",
+            "ios": "1:610668087496:ios:58875c068b5a4372e93dfd"
+          }
+        }
+      }
+    }
+  }
+}
