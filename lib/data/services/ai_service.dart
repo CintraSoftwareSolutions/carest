@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 /// Generates gentle reflection suggestions for the "What's in your heart?"
@@ -21,19 +22,26 @@ class AiService extends GetxService {
     _tryInitModel();
   }
 
-  void _tryInitModel() {
+  void _tryInitModel() => _ensureModel();
+
+  /// Lazily builds the model. Retries on each call so that enabling
+  /// Firebase AI Logic after startup takes effect without a reinstall.
+  GenerativeModel? _ensureModel() {
+    if (_model != null) return _model;
     try {
       // Uses the Gemini Developer API backend (free tier, no billing required).
       _model = FirebaseAI.googleAI().generativeModel(
-        model: 'gemini-2.5-flash',
+        model: 'gemini-2.0-flash',
         generationConfig: GenerationConfig(
           temperature: 0.7,
           responseMimeType: 'application/json',
         ),
       );
-    } catch (_) {
+    } catch (e) {
+      debugPrint('AI: model init failed: $e');
       _model = null;
     }
+    return _model;
   }
 
   /// Returns up to 2 short, gentle rephrasings of what the user typed —
@@ -42,7 +50,8 @@ class AiService extends GetxService {
     final trimmed = burden.trim();
     if (trimmed.isEmpty) return [];
 
-    if (_model != null) {
+    final model = _ensureModel();
+    if (model != null) {
       try {
         final prompt =
             'A person using a Christian faith app wrote what is weighing on '
@@ -51,16 +60,20 @@ class AiService extends GetxService {
             'calm, non-clinical. Do not add advice or scripture. '
             'Return ONLY JSON: {"suggestions":["...","..."]}\n\n'
             'What they wrote: "$trimmed"';
-        final res = await _model!
+        final res = await model
             .generateContent([Content.text(prompt)]).timeout(
-                const Duration(seconds: 12));
+                const Duration(seconds: 15));
         final text = res.text;
         if (text != null && text.trim().isNotEmpty) {
           final parsed = _parseSuggestions(text);
-          if (parsed.isNotEmpty) return parsed.take(2).toList();
+          if (parsed.isNotEmpty) {
+            debugPrint('AI: Gemini suggestions OK');
+            return parsed.take(2).toList();
+          }
         }
-      } catch (_) {
-        // fall through to local fallback
+        debugPrint('AI: Gemini returned no usable text, using fallback');
+      } catch (e) {
+        debugPrint('AI: Gemini call failed: $e');
       }
     }
     return _localSuggestions(trimmed);
@@ -69,15 +82,16 @@ class AiService extends GetxService {
   /// Optional: a single personalized comforting line for the release screen.
   Future<String?> comfortLine(String burden) async {
     final trimmed = burden.trim();
-    if (trimmed.isEmpty || _model == null) return null;
+    final model = _ensureModel();
+    if (trimmed.isEmpty || model == null) return null;
     try {
       final prompt =
           'Write ONE short comforting sentence (max ~14 words) reassuring a '
           'Christian that God is holding this specific worry. No scripture ref. '
           'Return ONLY JSON: {"line":"..."}\n\nThe worry: "$trimmed"';
-      final res = await _model!
+      final res = await model
           .generateContent([Content.text(prompt)]).timeout(
-              const Duration(seconds: 12));
+              const Duration(seconds: 15));
       final text = res.text;
       if (text == null) return null;
       final map = _tryJson(text);

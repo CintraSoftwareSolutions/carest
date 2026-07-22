@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -20,9 +21,24 @@ class AppServices {
     try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
-      ).timeout(const Duration(seconds: 8));
+      ).timeout(const Duration(seconds: 25));
     } catch (e) {
       debugPrint('Firebase initialize failed: $e');
+    }
+
+    // App Check is required by the Firebase AI Logic (Gemini Developer API)
+    // backend. On the emulator/debug builds we use the debug provider; a
+    // debug token is printed to logcat and must be registered once in the
+    // Firebase console (App Check → Manage debug tokens). Production builds
+    // should switch androidProvider to AndroidProvider.playIntegrity.
+    try {
+      await FirebaseAppCheck.instance.activate(
+        providerAndroid: kReleaseMode
+            ? AndroidPlayIntegrityProvider()
+            : AndroidDebugProvider(),
+      );
+    } catch (e) {
+      debugPrint('App Check activation failed: $e');
     }
 
     await Get.putAsync(() => SessionService().init());
