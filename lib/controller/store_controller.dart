@@ -2,9 +2,11 @@ import 'package:get/get.dart';
 
 import '../data/models/models.dart';
 import '../data/services/content_repository.dart';
+import '../data/services/shopify_service.dart';
 import '../data/services/user_repository.dart';
 
-/// Manages store products and the persisted cart (backed by Firestore).
+/// Manages store products and the persisted cart.
+/// Products come from Shopify when configured, otherwise from Firestore.
 class StoreController extends GetxController {
   static StoreController get to => Get.find();
 
@@ -14,6 +16,8 @@ class StoreController extends GetxController {
   final RxString search = ''.obs;
 
   static const double deliveryFee = 5.0;
+
+  bool get usingShopify => ShopifyService.to.isEnabled;
 
   @override
   void onInit() {
@@ -25,12 +29,24 @@ class StoreController extends GetxController {
   Future<void> loadProducts() async {
     loadingProducts.value = true;
     try {
-      products.value = await ContentRepository.to.getProducts();
+      // Prefer the live Shopify catalog when configured; fall back to Firestore.
+      if (ShopifyService.to.isEnabled) {
+        final shopifyProducts = await ShopifyService.to.getProducts();
+        products.value = shopifyProducts.isNotEmpty
+            ? shopifyProducts
+            : await ContentRepository.to.getProducts();
+      } else {
+        products.value = await ContentRepository.to.getProducts();
+      }
     } catch (_) {
       products.clear();
     }
     loadingProducts.value = false;
   }
+
+  /// For a Shopify-backed cart, returns the hosted checkout URL (or null).
+  Future<String?> shopifyCheckoutUrl() =>
+      ShopifyService.to.createCheckoutUrl(cart.toList());
 
   void _bindCart() {
     cart.bindStream(UserRepository.to.cartStream());

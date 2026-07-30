@@ -20,8 +20,17 @@ class StoreProductDetailScreen extends StatelessWidget {
   Future<void> _openStore() async {
     if (product.storeUrl.isEmpty) return;
     final uri = Uri.tryParse(product.storeUrl);
-    if (uri != null && await canLaunchUrl(uri)) {
+    if (uri == null) return;
+    // Launch directly — canLaunchUrl() returns false on Android 11+ without
+    // <queries> declared, which would silently block a valid https URL.
+    try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      Get.snackbar(
+        "Couldn't open store",
+        "Please try again.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -118,12 +127,16 @@ class StoreProductDetailScreen extends StatelessWidget {
                             children: [
                               CommonImageView(svgPath: Assets.svgShopify),
                               const SizedBox(width: 10),
-                              MyText(
-                                text: product.storeName,
-                                size: 14,
-                                weight: FontWeight.w600,
+                              Expanded(
+                                child: MyText(
+                                  text: product.storeName,
+                                  size: 14,
+                                  weight: FontWeight.w600,
+                                  maxLines: 1,
+                                  textOverflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              const Spacer(),
+                              const SizedBox(width: 8),
                               GestureDetector(
                                 onTap: () => _openStore(),
                                 child: Container(

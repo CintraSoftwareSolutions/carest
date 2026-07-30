@@ -117,9 +117,14 @@ class UserRepository extends GetxService {
     }
   }
 
+  /// Firestore doc IDs can't contain '/', but Shopify product GIDs
+  /// (e.g. gid://shopify/Product/123) do — so sanitize for the doc key.
+  String _cartDocId(String productId) =>
+      productId.replaceAll(RegExp(r'[/#?]'), '_');
+
   Future<void> addToCart(Product product, {int quantity = 1}) async {
     try {
-      final ref = _cart.doc(product.id);
+      final ref = _cart.doc(_cartDocId(product.id));
       final existing = await ref.get();
       if (existing.exists) {
         await ref.set(
@@ -131,6 +136,7 @@ class UserRepository extends GetxService {
           name: product.title,
           price: product.price,
           imageUrl: product.imageUrl,
+          variantId: product.variantId,
           quantity: quantity,
         ).toMap());
       }
@@ -139,18 +145,18 @@ class UserRepository extends GetxService {
 
   Future<void> setCartQuantity(String productId, int quantity) async {
     try {
+      final ref = _cart.doc(_cartDocId(productId));
       if (quantity <= 0) {
-        await _cart.doc(productId).delete();
+        await ref.delete();
       } else {
-        await _cart.doc(productId).set(
-            {'quantity': quantity}, SetOptions(merge: true));
+        await ref.set({'quantity': quantity}, SetOptions(merge: true));
       }
     } catch (_) {}
   }
 
   Future<void> removeFromCart(String productId) async {
     try {
-      await _cart.doc(productId).delete();
+      await _cart.doc(_cartDocId(productId)).delete();
     } catch (_) {}
   }
 

@@ -27,18 +27,39 @@ class SessionService extends GetxService {
   }
 
   Future<String> _resolveUserId() async {
+    // Prefer Firebase Anonymous Auth. On a cold start the first sign-in can be
+    // slow (App Check attestation happens first), so we wait generously and,
+    // if the call times out, still pick up the uid once auth settles — the
+    // security rules require request.auth.uid to match the users/{uid} path,
+    // so we must NOT fall back to a device id while anon auth is actually
+    // succeeding in the background.
     try {
-      final user =
-          _auth.currentUser ??
-          (await _auth.signInAnonymously().timeout(
-            const Duration(seconds: 6),
-          )).user;
+      var user = _auth.currentUser;
+      if (user == null) {
+        user = (await _auth.signInAnonymously().timeout(
+          const Duration(seconds: 25),
+        )).user;
+      }
+      user ??= _auth.currentUser;
       if (user != null) {
         usingAnonAuth = true;
         return user.uid;
       }
     } catch (e) {
-      debugPrint('Anonymous Firebase auth failed: $e');
+      debugPrint('Anonymous Firebase auth slow/failed, waiting for auth state: $e');
+      try {
+        final user = _auth.currentUser ??
+            await _auth
+                .authStateChanges()
+                .firstWhere((u) => u != null)
+                .timeout(const Duration(seconds: 15));
+        if (user != null) {
+          usingAnonAuth = true;
+          return user.uid;
+        }
+      } catch (e2) {
+        debugPrint('Anonymous auth did not settle: $e2');
+      }
     }
 
     final prefs = await SharedPreferences.getInstance();

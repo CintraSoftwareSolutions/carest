@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../config/constants/app_colors.dart';
 import '../../../config/constants/app_sizes.dart';
@@ -21,6 +22,22 @@ class CheckOutScreen extends StatelessWidget {
     final total = controller.total;
     final deliveryInfo = await UserRepository.to.getDeliveryInfo();
 
+    // Shopify path: hand off to Shopify's secure hosted checkout in the browser.
+    if (controller.usingShopify) {
+      final url = await controller.shopifyCheckoutUrl();
+      if (url != null) {
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        return;
+      }
+      Get.snackbar(
+        "Checkout unavailable",
+        "Couldn't start Shopify checkout. Please try again.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    // Fallback (no Shopify configured): the in-app mock payment flow.
     DonationBottomSheet.selectPaymentSheet(
       amount: total,
       onComplete: (_) async {

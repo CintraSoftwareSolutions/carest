@@ -10,6 +10,7 @@ import 'ai_service.dart';
 import 'audio_service.dart';
 import 'content_repository.dart';
 import 'session_service.dart';
+import 'shopify_service.dart';
 import 'user_repository.dart';
 
 /// Initializes Firebase and registers all app services/repositories with GetX.
@@ -46,6 +47,7 @@ class AppServices {
     final content = Get.put(ContentRepository());
     Get.put(UserRepository());
     Get.put(AiService());
+    Get.put(ShopifyService());
 
     unawaited(_seedContent(content));
     unawaited(_initAudio(content));

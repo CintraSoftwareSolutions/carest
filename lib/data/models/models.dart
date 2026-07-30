@@ -58,6 +58,10 @@ class Product {
   final String storeUrl;
   final bool active;
 
+  /// Shopify Storefront variant GID (empty for Firestore-seeded products).
+  /// Required to build a Shopify checkout URL.
+  final String variantId;
+
   Product({
     required this.id,
     required this.title,
@@ -68,6 +72,7 @@ class Product {
     required this.storeName,
     required this.storeUrl,
     required this.active,
+    this.variantId = '',
   });
 
   factory Product.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -82,6 +87,7 @@ class Product {
       storeName: (d['storeName'] ?? 'Castcares.com') as String,
       storeUrl: (d['storeUrl'] ?? '') as String,
       active: (d['active'] ?? true) as bool,
+      variantId: (d['variantId'] ?? '') as String,
     );
   }
 
@@ -94,6 +100,7 @@ class CartItem {
   final String name;
   final double price;
   final String imageUrl;
+  final String variantId;
   int quantity;
 
   CartItem({
@@ -101,6 +108,7 @@ class CartItem {
     required this.name,
     required this.price,
     required this.imageUrl,
+    this.variantId = '',
     this.quantity = 1,
   });
 
@@ -111,6 +119,7 @@ class CartItem {
       name: (d['name'] ?? '') as String,
       price: ((d['price'] ?? 0) as num).toDouble(),
       imageUrl: (d['imageUrl'] ?? '') as String,
+      variantId: (d['variantId'] ?? '') as String,
       quantity: (d['quantity'] ?? 1) as int,
     );
   }
@@ -120,6 +129,7 @@ class CartItem {
     'name': name,
     'price': price,
     'imageUrl': imageUrl,
+    'variantId': variantId,
     'quantity': quantity,
   };
 
