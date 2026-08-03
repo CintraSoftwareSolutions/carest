@@ -3,6 +3,7 @@ import 'package:castyourcare/view/custom/common_image_view_widget.dart';
 import 'package:castyourcare/view/custom/my_text_widget.dart';
 import 'package:castyourcare/view/screen/user_profile/help_support_screen.dart';
 import 'package:castyourcare/view/screen/user_profile/privacy_policy_screen.dart';
+import 'package:castyourcare/view/screen/user_profile/profile_bottom_sheet/edit_profile_sheet.dart';
 import 'package:castyourcare/view/screen/user_profile/profile_bottom_sheet/profile_bottom_sheet_screen.dart';
 import 'package:castyourcare/view/screen/user_profile/term_and_condition_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -136,34 +137,55 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         final data = snapshot.data?.data() ?? {};
         final username = (data['username'] ?? '@user') as String;
         final year = (data['memberSince'] ?? DateTime.now().year);
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-          decoration: ShapeDecoration(
-            color: kQuaternaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          child: Row(
-            children: [
-              CommonImageView(imagePath: Assets.imagesPpff, height: 45),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MyText(text: username, size: 16, weight: FontWeight.w600),
-                    const SizedBox(height: 3),
-                    MyText(
-                      text: "Member since $year",
-                      size: 12,
-                      weight: FontWeight.w500,
-                    ),
-                  ],
-                ),
+        final profile = Map<String, dynamic>.from(data['profile'] ?? {});
+        final name = (profile['name'] ?? '') as String;
+        final email = (profile['email'] ?? '') as String;
+
+        // Show the entered name as the title (fall back to username), and the
+        // email (or "member since") as the subtitle.
+        final title = name.isNotEmpty ? name : username;
+        final subtitle = email.isNotEmpty ? email : "Member since $year";
+
+        return GestureDetector(
+          onTap: () => EditProfileSheet.open(),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+            decoration: ShapeDecoration(
+              color: kQuaternaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-            ],
+            ),
+            child: Row(
+              children: [
+                CommonImageView(imagePath: Assets.imagesPpff, height: 45),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MyText(
+                        text: title,
+                        size: 16,
+                        weight: FontWeight.w600,
+                        maxLines: 1,
+                        textOverflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3),
+                      MyText(
+                        text: subtitle,
+                        size: 12,
+                        weight: FontWeight.w500,
+                        maxLines: 1,
+                        textOverflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.edit, size: 18, color: kTextColor),
+              ],
+            ),
           ),
         );
       },

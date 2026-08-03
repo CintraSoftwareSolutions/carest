@@ -47,6 +47,19 @@ class UserRepository extends GetxService {
     } catch (_) {}
   }
 
+  // ---- Profile details ----
+
+  Future<void> saveProfile(Map<String, dynamic> profile) async {
+    try {
+      await _userDoc.set({'profile': profile}, SetOptions(merge: true));
+    } catch (_) {}
+  }
+
+  Future<Map<String, dynamic>> getProfile() async {
+    final u = await getUser();
+    return Map<String, dynamic>.from(u['profile'] ?? {});
+  }
+
   // ---- Delivery info ----
 
   Future<void> saveDeliveryInfo(Map<String, dynamic> info) async {

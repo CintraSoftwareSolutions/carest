@@ -17,7 +17,8 @@ service cloud.firestore {
         'memberSince',
         'settings',
         'deliveryInfo',
-        'splashRotationIndex'
+        'splashRotationIndex',
+        'profile'
       ]);
     }
 
