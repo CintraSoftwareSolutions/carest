@@ -18,6 +18,9 @@ class Welcome2Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Keep this screen static when the cast-care sheet's keyboard opens —
+      // it's behind a modal sheet, so it shouldn't resize/overflow.
+      resizeToAvoidBottomInset: false,
       body: Container(
         width: double.infinity,
         height: double.infinity,

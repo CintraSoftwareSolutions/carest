@@ -11,10 +11,13 @@ import '../../../custom/my_text_widget.dart';
 
 class AuthBottomSheetScreen {
   static void selectCastCareSheet() {
-    Get.bottomSheet(
-      const _CastCareSheet(),
+    // Flutter's showModalBottomSheet correctly anchors the sheet above the
+    // soft keyboard (Get.bottomSheet does not, which made it fly to the top).
+    showModalBottomSheet(
+      context: Get.context!,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      builder: (_) => const _CastCareSheet(),
     );
   }
 }
@@ -84,72 +87,109 @@ class _CastCareSheetState extends State<_CastCareSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final media = MediaQuery.of(context);
+    final bottomInset = media.viewInsets.bottom;
+    // With showModalBottomSheet + the viewInsets padding below, the sheet sits
+    // directly above the keyboard; cap its height so it scrolls if needed.
+    final maxSheetHeight = media.size.height * 0.85 - bottomInset;
+
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: kSplashColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () => Get.back(),
-              child: Row(
-                children: [
-                  const Icon(Icons.arrow_back, size: 15),
-                  const SizedBox(width: 3),
-                  MyText(text: "Back", size: 14, weight: FontWeight.w600),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            MyText(text: "What’s in Your heart?", size: 20, weight: FontWeight.w600),
-            const SizedBox(height: 5),
-            MyText(
-              text: "Tell God what’s on your heart cast your cares on Him.",
-              size: 14,
-              weight: FontWeight.w600,
-              color: kTextColor,
-            ),
-            const SizedBox(height: 20),
-            MyTextField(
-              controller: _controller,
-              focusNode: _focusNode,
-              onChanged: _onChanged,
-              label: "What is weighing on your heart today?",
-              maxLines: 5,
-              marginBottom: 12,
-            ),
-            _buildSuggestions(),
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: _cast,
-              child: Container(
-                height: 56,
-                width: double.infinity,
-                decoration: ShapeDecoration(
-                  color: const Color(0xFF1F3A5F),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+      // Tapping anywhere outside the text field dismisses the keyboard
+      // (fixes the "keyboard won't go back down" issue).
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          constraints: BoxConstraints(maxHeight: maxSheetHeight),
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: kSplashColor,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.arrow_back, size: 15),
+                          const SizedBox(width: 3),
+                          MyText(
+                            text: "Back",
+                            size: 14,
+                            weight: FontWeight.w600,
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Explicit keyboard-dismiss affordance for the multiline field.
+                    GestureDetector(
+                      onTap: () => FocusScope.of(context).unfocus(),
+                      child: MyText(
+                        text: "Done",
+                        size: 14,
+                        weight: FontWeight.w600,
+                        color: const Color(0xFF1F3A5F),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                MyText(
+                  text: "What’s in Your heart?",
+                  size: 20,
+                  weight: FontWeight.w600,
+                ),
+                const SizedBox(height: 5),
+                MyText(
+                  text: "Tell God what’s on your heart cast your cares on Him.",
+                  size: 14,
+                  weight: FontWeight.w600,
+                  color: kTextColor,
+                ),
+                const SizedBox(height: 20),
+                MyTextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  onChanged: _onChanged,
+                  label: "What is weighing on your heart today?",
+                  maxLines: 4,
+                  marginBottom: 12,
+                ),
+                _buildSuggestions(),
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: _cast,
+                  child: Container(
+                    height: 56,
+                    width: double.infinity,
+                    decoration: ShapeDecoration(
+                      color: const Color(0xFF1F3A5F),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Center(
+                      child: MyText(
+                        text: "Cast Your Cares",
+                        size: 16,
+                        weight: FontWeight.w600,
+                        color: kQuaternaryColor,
+                      ),
+                    ),
                   ),
                 ),
-                child: Center(
-                  child: MyText(
-                    text: "Cast Your Cares",
-                    size: 16,
-                    weight: FontWeight.w600,
-                    color: kQuaternaryColor,
-                  ),
-                ),
-              ),
+                const SizedBox(height: 10),
+              ],
             ),
-            const SizedBox(height: 10),
-          ],
+          ),
         ),
       ),
     );

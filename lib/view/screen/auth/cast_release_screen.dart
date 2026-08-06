@@ -1,10 +1,11 @@
+import 'dart:math';
+
 import 'package:castyourcare/config/constants/app_sizes.dart';
 import 'package:castyourcare/view/custom/common_image_view_widget.dart';
 import 'package:castyourcare/view/custom/my_button.dart';
 import 'package:castyourcare/view/custom/my_text_widget.dart';
 import 'package:castyourcare/view/screen/bottom_nav_bar/bottom_nav_bar_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:get/get.dart';
 
 import '../../../config/constants/app_colors.dart';
@@ -24,11 +25,7 @@ class CastReleaseScreen extends StatefulWidget {
 }
 
 class _CastReleaseScreenState extends State<CastReleaseScreen> {
-  final CardSwiperController _swiperController = CardSwiperController();
-
-  final ValueNotifier<int> currentIndex = ValueNotifier<int>(0);
-
-  List<String> releasedQuotes = [
+  static const List<String> _fallbackQuotes = [
     "It’s in God’s hands now. Rest.",
     "Let it go. Breathe. God is with you.",
     "You’ve given it to God. Rest in His care.",
@@ -41,11 +38,15 @@ class _CastReleaseScreenState extends State<CastReleaseScreen> {
     "You gave it to God. You don’t have to carry it anymore.",
   ];
 
+  // A single message per release, chosen once (changes every time you release).
+  late String _quote;
+
   @override
   void initState() {
     super.initState();
+    _quote = _fallbackQuotes[Random().nextInt(_fallbackQuotes.length)];
     _recordRelease();
-    _loadQuotes();
+    _loadQuote();
   }
 
   /// The ONLY thing persisted on a cast: increment the released counter.
@@ -56,19 +57,22 @@ class _CastReleaseScreenState extends State<CastReleaseScreen> {
     } catch (_) {}
   }
 
-  Future<void> _loadQuotes() async {
+  Future<void> _loadQuote() async {
     try {
-      final quotes = await ContentRepository.to.getReleaseQuotes();
-      final list = quotes.map((q) => q.text).toList();
-
-      // Optionally lead with a personalized AI comfort line.
+      // Prefer a personalized AI comfort line when available.
       if (widget.burden.trim().isNotEmpty) {
         final line = await AiService.to.comfortLine(widget.burden);
-        if (line != null && line.isNotEmpty) list.insert(0, line);
+        if (line != null && line.isNotEmpty && mounted) {
+          setState(() => _quote = line);
+          return;
+        }
       }
-
+      // Otherwise pick one random quote from Firestore (fallback to bundled).
+      final quotes = await ContentRepository.to.getReleaseQuotes();
+      final list =
+          quotes.map((q) => q.text).where((t) => t.isNotEmpty).toList();
       if (list.isNotEmpty && mounted) {
-        setState(() => releasedQuotes = list);
+        setState(() => _quote = list[Random().nextInt(list.length)]);
       }
     } catch (_) {}
   }
@@ -76,27 +80,10 @@ class _CastReleaseScreenState extends State<CastReleaseScreen> {
   String get formattedDate {
     final now = DateTime.now();
     const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December",
     ];
     return "${months[now.month - 1]} ${now.day}, ${now.year}";
-  }
-
-  @override
-  void dispose() {
-    _swiperController.dispose();
-    currentIndex.dispose();
-    super.dispose();
   }
 
   @override
@@ -117,57 +104,10 @@ class _CastReleaseScreenState extends State<CastReleaseScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                CommonImageView(
-                  imagePath: Assets.imagesCarest,
-                  height: 90,
-                ),
+                CommonImageView(imagePath: Assets.imagesCarest, height: 90),
                 const Spacer(),
-
-                SizedBox(
-                  height: 340,
-                  child: CardSwiper(
-                    controller: _swiperController,
-                    cardsCount: releasedQuotes.length,
-                    numberOfCardsDisplayed: 3,
-                    backCardOffset: const Offset(0, -14),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 8,
-                    ),
-                    scale: 0.94,
-                    duration: const Duration(milliseconds: 450),
-                    maxAngle: 0,
-                    isLoop: true,
-                    allowedSwipeDirection: const AllowedSwipeDirection.only(
-                      up: true,
-                      down: true,
-                    ),
-                    onSwipe: (
-                        int previousIndex,
-                        int? newIndex,
-                        CardSwiperDirection direction,
-                        ) {
-                      if (newIndex != null) {
-                        currentIndex.value = newIndex;
-                      }
-                      return true;
-                    },
-                    cardBuilder: (
-                        BuildContext context,
-                        int index,
-                        int horizontalOffsetPercentage,
-                        int verticalOffsetPercentage,
-                        ) {
-                      return _QuoteCard(
-                        date: formattedDate,
-                        quote: releasedQuotes[index],
-                      );
-                    },
-                  ),
-                ),
-
+                _QuoteCard(date: formattedDate, quote: _quote),
                 const Spacer(),
-
                 MyText(
                   text: "Your care has been\nreleased.",
                   textAlign: TextAlign.center,
@@ -184,9 +124,6 @@ class _CastReleaseScreenState extends State<CastReleaseScreen> {
                   color: kTextColor,
                 ),
                 const SizedBox(height: 22),
-
-
-
                 MyButton2(
                   onTap: () {
                     Get.offAll(() => BottomNavBarScreen());
@@ -206,50 +143,49 @@ class _QuoteCard extends StatelessWidget {
   final String date;
   final String quote;
 
-  const _QuoteCard({
-    required this.date,
-    required this.quote,
-  });
+  const _QuoteCard({required this.date, required this.quote});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 34),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F4),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: const Color(0xFFF0F1EC),
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      child: Container(
+        key: ValueKey(quote),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F7F4),
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: const Color(0xFFF0F1EC)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 24,
+              offset: const Offset(0, 10),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          MyText(
-            text: date,
-            size: 16,
-            weight: FontWeight.w500,
-            color: const Color(0xFF9CAF88),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 18),
-          MyText(
-            text: quote,
-            size: 28,
-            weight: FontWeight.w700,
-            textAlign: TextAlign.center,
-            color: const Color(0xFF9CAF88),
-            lineHeight: 1.35,
-          ),
-        ],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            MyText(
+              text: date,
+              size: 16,
+              weight: FontWeight.w500,
+              color: const Color(0xFF9CAF88),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 18),
+            MyText(
+              text: quote,
+              size: 26,
+              weight: FontWeight.w700,
+              textAlign: TextAlign.center,
+              color: const Color(0xFF9CAF88),
+              lineHeight: 1.35,
+            ),
+          ],
+        ),
       ),
     );
   }

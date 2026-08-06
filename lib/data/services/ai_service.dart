@@ -128,33 +128,47 @@ class AiService extends GetxService {
     }
   }
 
-  /// Simple on-device rephrasings used when Gemini is unavailable.
+  /// On-device rephrasings used when Gemini is unavailable.
+  ///
+  /// These are always grammatical, gentle first-person surrender statements.
+  /// We intentionally do NOT splice the user's raw text into a sentence (that
+  /// produced broken English like "I place i am worried..."). Instead we detect
+  /// a rough theme and return two natural phrasings.
   List<String> _localSuggestions(String burden) {
-    var b = burden.trim();
-    // Lowercase first letter and strip trailing punctuation for embedding.
-    var core = b;
-    if (core.isNotEmpty) core = core[0].toLowerCase() + core.substring(1);
-    core = core.replaceAll(RegExp(r'[.!?\s]+$'), '');
+    final lower = burden.toLowerCase();
 
-    // Detect a rough theme to make fallbacks feel less generic.
-    final lower = b.toLowerCase();
-    String theme = 'this';
-    if (RegExp(r'job|work|career|money|financ').hasMatch(lower)) {
-      theme = 'my work and provision';
-    } else if (RegExp(r'health|sick|ill|pain|anxi|fear|afraid|worry')
+    if (RegExp(r'job|work|career|money|financ|provision|bill|debt|income')
         .hasMatch(lower)) {
-      theme = 'my fears and what I cannot control';
-    } else if (RegExp(r'family|kid|child|marriage|relationship|friend')
-        .hasMatch(lower)) {
-      theme = 'the people I love';
-    } else if (RegExp(r'future|plan|uncertain|unknown|tomorrow')
-        .hasMatch(lower)) {
-      theme = 'my uncertain future';
+      return [
+        'I give God my work and finances, and trust Him to provide.',
+        'I place my need for provision in His hands.',
+      ];
     }
-
+    if (RegExp(r'health|sick|ill|pain|heal|anxi|fear|afraid|scared|worry|stress|overwhelm')
+        .hasMatch(lower)) {
+      return [
+        'I hand God my fears and the things I can’t control.',
+        'I trust God with my health and my peace of mind.',
+      ];
+    }
+    if (RegExp(r'family|kid|child|son|daughter|marriage|husband|wife|relationship|friend|parent')
+        .hasMatch(lower)) {
+      return [
+        'I place the people I love in God’s care.',
+        'I trust God with my relationships and those close to me.',
+      ];
+    }
+    if (RegExp(r'future|plan|uncertain|unknown|tomorrow|decision|direction|purpose')
+        .hasMatch(lower)) {
+      return [
+        'I surrender my uncertain future to God.',
+        'I trust God with what lies ahead, one day at a time.',
+      ];
+    }
+    // Generic, always-grammatical fallback.
     return [
-      'I place $core in God’s hands.',
-      'I give Him $theme and trust He cares.',
+      'I place this burden in God’s hands.',
+      'I trust God with what’s weighing on my heart.',
     ];
   }
 }

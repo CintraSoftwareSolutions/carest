@@ -127,8 +127,10 @@ class _DonationScreenState extends State<DonationScreen> {
                     },
                     child: Container(
                       width: 80,
-                      height: 44,
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                       decoration: ShapeDecoration(
                         color: selected
                             ? const Color(0x199CAF88)
