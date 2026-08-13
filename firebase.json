@@ -19,17 +19,17 @@
     "platforms": {
       "android": {
         "default": {
-          "projectId": "carest-app-df202",
-          "appId": "1:610668087496:android:b6740859f20a9f81e93dfd",
+          "projectId": "carest-app-e676e",
+          "appId": "1:134705038483:android:18f9e9862c39fc2af0f966",
           "fileOutput": "android/app/google-services.json"
         }
       },
       "dart": {
         "lib/firebase_options.dart": {
-          "projectId": "carest-app-df202",
+          "projectId": "carest-app-e676e",
           "configurations": {
-            "android": "1:610668087496:android:b6740859f20a9f81e93dfd",
-            "ios": "1:610668087496:ios:58875c068b5a4372e93dfd"
+            "android": "1:134705038483:android:18f9e9862c39fc2af0f966",
+            "ios": "1:134705038483:ios:0b65555d635b8916f0f966"
           }
         }
       }

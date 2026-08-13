@@ -50,19 +50,18 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAq-qNUHdqlHaO5xXtOzm3T5XHALvfAVRc',
-    appId: '1:610668087496:android:b6740859f20a9f81e93dfd',
-    messagingSenderId: '610668087496',
-    projectId: 'carest-app-df202',
-    storageBucket: 'carest-app-df202.firebasestorage.app',
+    apiKey: 'AIzaSyD9iiFoHemNSUjUapunykH6h_agtcvb9g4',
+    appId: '1:134705038483:android:18f9e9862c39fc2af0f966',
+    messagingSenderId: '134705038483',
+    projectId: 'carest-app-e676e',
+    storageBucket: 'carest-app-e676e.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD0e0cXwMLJpQWUamaNH8NygBiuucLSNQI',
-    appId: '1:610668087496:ios:58875c068b5a4372e93dfd',
-    messagingSenderId: '610668087496',
-    projectId: 'carest-app-df202',
-    storageBucket: 'carest-app-df202.firebasestorage.app',
+    apiKey: 'AIzaSyC_-ObBTmE-UbOm_8-lnadvrUheVM5mUH4',
+    appId: '1:134705038483:ios:0b65555d635b8916f0f966',
+    messagingSenderId: '134705038483',
+    projectId: 'carest-app-e676e',
+    storageBucket: 'carest-app-e676e.firebasestorage.app',
     iosBundleId: 'com.castyourcare.app',
   );
 }

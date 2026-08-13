@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "610668087496",
-    "project_id": "carest-app-df202",
-    "storage_bucket": "carest-app-df202.firebasestorage.app"
+    "project_number": "134705038483",
+    "project_id": "carest-app-e676e",
+    "storage_bucket": "carest-app-e676e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:610668087496:android:b6740859f20a9f81e93dfd",
+        "mobilesdk_app_id": "1:134705038483:android:18f9e9862c39fc2af0f966",
         "android_client_info": {
           "package_name": "com.castyourcare.app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAq-qNUHdqlHaO5xXtOzm3T5XHALvfAVRc"
+          "current_key": "AIzaSyD9iiFoHemNSUjUapunykH6h_agtcvb9g4"
         }
       ],
       "services": {
