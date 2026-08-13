@@ -1,0 +1,14 @@
+{
+  "name": "carest-functions",
+  "description": "Cloud Functions for Cast Your Cares (Stripe donations)",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.1.0",
+    "stripe": "^17.5.0"
+  },
+  "private": true
+}

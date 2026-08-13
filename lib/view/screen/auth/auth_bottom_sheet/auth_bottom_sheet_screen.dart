@@ -80,6 +80,10 @@ class _CastCareSheetState extends State<_CastCareSheet> {
 
   void _cast() {
     final burden = _controller.text.trim();
+    // Dismiss the keyboard BEFORE navigating so the next full-height screen
+    // isn't briefly laid out against a shrunken (keyboard-reduced) height,
+    // which caused a ~1s RenderFlex overflow during the transition.
+    FocusScope.of(context).unfocus();
     Get.back();
     // Pass the burden text ONLY in-memory to the release screen (never stored).
     Get.to(() => ReleaseScreen(burden: burden));

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../../config/constants/app_colors.dart';
 import '../../../data/services/content_repository.dart';
+import '../../../data/services/stripe_service.dart';
 import '../../../data/services/user_repository.dart';
 import '../../../generated/assets.dart';
 import '../../custom/common_image_view_widget.dart';
@@ -46,7 +47,9 @@ class _DonationScreenState extends State<DonationScreen> {
     return double.tryParse(raw) ?? 0;
   }
 
-  void _donate() {
+  bool _processing = false;
+
+  Future<void> _donate() async {
     final amount = _amount;
     if (amount <= 0) {
       Get.snackbar(
@@ -56,12 +59,31 @@ class _DonationScreenState extends State<DonationScreen> {
       );
       return;
     }
-    DonationBottomSheet.selectPaymentSheet(
-      amount: amount,
-      onComplete: (method) {
-        return UserRepository.to.recordDonation(amount: amount, method: method);
-      },
-    );
+    if (_processing) return;
+    setState(() => _processing = true);
+
+    // Real Stripe payment: Cloud Function creates the PaymentIntent, then the
+    // native Stripe Payment Sheet collects the card / wallet.
+    final result = await StripeService.to.payDonation(amount);
+    if (!mounted) return;
+    setState(() => _processing = false);
+
+    switch (result) {
+      case PaymentResult.success:
+        await UserRepository.to
+            .recordDonation(amount: amount, method: 'stripe');
+        DonationBottomSheet.paymentSuccessBottomSheet();
+        break;
+      case PaymentResult.canceled:
+        break; // user dismissed the sheet — no message
+      case PaymentResult.failed:
+        Get.snackbar(
+          "Payment failed",
+          "We couldn't process your donation. Please try again.",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        break;
+    }
   }
 
   @override
@@ -168,12 +190,21 @@ class _DonationScreenState extends State<DonationScreen> {
                     ),
                   ),
                   child: Center(
-                    child: MyText(
-                      text: "Donate Now",
-                      size: 16,
-                      weight: FontWeight.w600,
-                      color: kQuaternaryColor,
-                    ),
+                    child: _processing
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : MyText(
+                            text: "Donate Now",
+                            size: 16,
+                            weight: FontWeight.w600,
+                            color: kQuaternaryColor,
+                          ),
                   ),
                 ),
               ),

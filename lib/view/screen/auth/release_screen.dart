@@ -250,6 +250,10 @@ class _ReleaseScreenState extends State<ReleaseScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // No text fields here; ignore the keyboard inset so this screen doesn't
+      // briefly overflow while the keyboard from the previous screen animates
+      // away during the navigation transition.
+      resizeToAvoidBottomInset: false,
       body: Container(
         width: double.infinity,
         height: double.infinity,
