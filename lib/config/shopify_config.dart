@@ -16,6 +16,9 @@ class ShopifyConfig {
   static const String storeDomain = 'castyourcaresapparel.myshopify.com';
   static const String storefrontAccessToken = '8dbbd1382e599061735f0d5397264e39';
 
+  /// Friendly store name shown in the UI (never the raw myshopify URL).
+  static const String storeDisplayName = 'Cast Your Cares Apparel';
+
   /// Storefront API version. Bump to a current version periodically.
   static const String apiVersion = '2025-01';
 

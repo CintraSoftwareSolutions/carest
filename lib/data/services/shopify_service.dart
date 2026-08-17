@@ -83,7 +83,7 @@ class ShopifyService extends GetxService {
           description: desc,
           shortDesc: desc.length > 90 ? '${desc.substring(0, 90)}…' : desc,
           imageUrl: (node['featuredImage']?['url'] ?? '') as String,
-          storeName: ShopifyConfig.storeDomain,
+          storeName: ShopifyConfig.storeDisplayName,
           storeUrl: (node['onlineStoreUrl'] ?? '') as String,
           active: true,
           variantId: variantId,
