@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 import '../models/models.dart';
@@ -49,10 +50,17 @@ class UserRepository extends GetxService {
 
   // ---- Profile details ----
 
-  Future<void> saveProfile(Map<String, dynamic> profile) async {
+  /// Returns true if the profile was written to Firestore, false on failure
+  /// (e.g. no auth / permission). The caller can then show a real message
+  /// instead of a false "saved".
+  Future<bool> saveProfile(Map<String, dynamic> profile) async {
     try {
       await _userDoc.set({'profile': profile}, SetOptions(merge: true));
-    } catch (_) {}
+      return true;
+    } catch (e) {
+      debugPrint('saveProfile failed: $e');
+      return false;
+    }
   }
 
   Future<Map<String, dynamic>> getProfile() async {

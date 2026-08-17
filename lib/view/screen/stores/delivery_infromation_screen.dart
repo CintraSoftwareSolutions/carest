@@ -98,8 +98,14 @@ class _DeliveryInfromationScreenState extends State<DeliveryInfromationScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
+      // Tapping empty space dismisses the keyboard (the address field is
+      // multiline with no "done" key, which was trapping users on iOS).
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: SafeArea(
           child: Padding(
             padding: AppSizes.DEFAULT,
@@ -160,6 +166,7 @@ class _DeliveryInfromationScreenState extends State<DeliveryInfromationScreen> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

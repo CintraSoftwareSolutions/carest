@@ -56,20 +56,30 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   }
 
   Future<void> _save() async {
+    FocusScope.of(context).unfocus();
     setState(() => _saving = true);
-    await UserRepository.to.saveProfile({
+    final ok = await UserRepository.to.saveProfile({
       'name': _name.text.trim(),
       'email': _email.text.trim(),
       'phone': _phone.text.trim(),
     });
     if (!mounted) return;
     setState(() => _saving = false);
-    Get.back();
-    Get.snackbar(
-      "Profile saved",
-      "Your details have been updated.",
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    if (ok) {
+      Get.back();
+      Get.snackbar(
+        "Profile saved",
+        "Your details have been updated.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } else {
+      // Don't claim success when the write failed.
+      Get.snackbar(
+        "Couldn't save",
+        "Please check your connection and try again.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   @override
