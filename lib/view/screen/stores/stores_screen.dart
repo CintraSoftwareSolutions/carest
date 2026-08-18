@@ -2,6 +2,7 @@ import 'package:castyourcare/config/constants/app_sizes.dart';
 import 'package:castyourcare/view/custom/common_image_view_widget.dart';
 import 'package:castyourcare/view/custom/my_text_widget.dart';
 import 'package:castyourcare/view/custom/my_textfeild.dart';
+import 'package:castyourcare/view/screen/stores/store_cart_screen.dart';
 import 'package:castyourcare/view/screen/stores/store_product_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -48,7 +49,11 @@ class StoresScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    CommonImageView(imagePath: Assets.imagesWifi, height: 45),
+                    GestureDetector(
+                      onTap: () => Get.to(() => StoreCartScreen()),
+                      child: CommonImageView(
+                          imagePath: Assets.imagesWifi, height: 45),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
