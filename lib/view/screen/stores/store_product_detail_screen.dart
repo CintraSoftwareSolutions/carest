@@ -95,7 +95,6 @@ class StoreProductDetailScreen extends StatelessWidget {
                 SizedBox(height: 20,),
                 Container(
                   width: double.infinity,
-                  height: 325,
                   padding: AppSizes.DEFAULT,
                   decoration: ShapeDecoration(
                     color: kQuaternaryColor,
@@ -103,7 +102,10 @@ class StoreProductDetailScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: Stack(
+                  // Image on top, store banner beneath it (no longer overlapping
+                  // the product image).
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       if (product.imageUrl.isNotEmpty)
                         Center(
@@ -112,52 +114,51 @@ class StoreProductDetailScreen extends StatelessWidget {
                             height: 260,
                           ),
                         ),
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 13),
-                          decoration: ShapeDecoration(
-                            color: const Color(0x219CAF88),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                      const SizedBox(height: 14),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 13),
+                        decoration: ShapeDecoration(
+                          color: const Color(0x219CAF88),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            CommonImageView(svgPath: Assets.svgShopify),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: MyText(
+                                text: product.storeName,
+                                size: 14,
+                                weight: FontWeight.w600,
+                                maxLines: 1,
+                                textOverflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                          child: Row(
-                            children: [
-                              CommonImageView(svgPath: Assets.svgShopify),
-                              const SizedBox(width: 10),
-                              Expanded(
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () => _openStore(),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 11),
+                                decoration: ShapeDecoration(
+                                  color: kQuaternaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
                                 child: MyText(
-                                  text: product.storeName,
-                                  size: 14,
+                                  text: "View Store",
+                                  size: 12,
                                   weight: FontWeight.w600,
-                                  maxLines: 1,
-                                  textOverflow: TextOverflow.ellipsis,
+                                  color: kGreenColor,
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: () => _openStore(),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 11),
-                                  decoration: ShapeDecoration(
-                                    color: kQuaternaryColor,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: MyText(
-                                    text: "View Store",
-                                    size: 12,
-                                    weight: FontWeight.w600,
-                                    color: kGreenColor,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
