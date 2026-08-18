@@ -29,12 +29,12 @@ class StoreController extends GetxController {
   Future<void> loadProducts() async {
     loadingProducts.value = true;
     try {
-      // Prefer the live Shopify catalog when configured; fall back to Firestore.
+      // Shopify-backed store: show ONLY the live Shopify catalog. Do not fall
+      // back to sample/seed products — that showed items the store doesn't
+      // actually sell and made a temporary network failure look like the
+      // catalog. If the fetch returns nothing, the UI shows a retry instead.
       if (ShopifyService.to.isEnabled) {
-        final shopifyProducts = await ShopifyService.to.getProducts();
-        products.value = shopifyProducts.isNotEmpty
-            ? shopifyProducts
-            : await ContentRepository.to.getProducts();
+        products.value = await ShopifyService.to.getProducts();
       } else {
         products.value = await ContentRepository.to.getProducts();
       }

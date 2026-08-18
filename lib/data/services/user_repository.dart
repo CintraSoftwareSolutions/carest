@@ -20,7 +20,9 @@ class UserRepository extends GetxService {
 
   Future<Map<String, dynamic>> getUser() async {
     try {
-      final snap = await _userDoc.get();
+      // Bound the read so screens that prefill from it (profile, delivery,
+      // settings) can never sit on a spinner forever when the network is slow.
+      final snap = await _userDoc.get().timeout(const Duration(seconds: 8));
       return snap.data() ?? {};
     } catch (_) {
       return {};
@@ -55,7 +57,9 @@ class UserRepository extends GetxService {
   /// instead of a false "saved".
   Future<bool> saveProfile(Map<String, dynamic> profile) async {
     try {
-      await _userDoc.set({'profile': profile}, SetOptions(merge: true));
+      await _userDoc
+          .set({'profile': profile}, SetOptions(merge: true))
+          .timeout(const Duration(seconds: 10));
       return true;
     } catch (e) {
       debugPrint('saveProfile failed: $e');
@@ -131,7 +135,7 @@ class UserRepository extends GetxService {
 
   Future<List<CartItem>> getCart() async {
     try {
-      final snap = await _cart.get();
+      final snap = await _cart.get().timeout(const Duration(seconds: 8));
       return snap.docs.map((d) => CartItem.fromDoc(d)).toList();
     } catch (_) {
       return [];

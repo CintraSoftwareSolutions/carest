@@ -74,13 +74,47 @@ class StoresScreen extends StatelessWidget {
                   }
                   final items = controller.filteredProducts;
                   if (items.isEmpty) {
+                    // Empty because the catalog failed to load (vs. a search
+                    // with no matches). Offer a retry when there are no
+                    // products at all.
+                    final catalogEmpty = controller.products.isEmpty;
                     return Padding(
                       padding: const EdgeInsets.only(top: 60),
                       child: Center(
-                        child: MyText(
-                          text: "No products found.",
-                          size: 14,
-                          color: kTextColor,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            MyText(
+                              text: catalogEmpty
+                                  ? "Couldn’t load the store. Please check your\nconnection and try again."
+                                  : "No products found.",
+                              size: 14,
+                              color: kTextColor,
+                              textAlign: TextAlign.center,
+                            ),
+                            if (catalogEmpty) ...[
+                              const SizedBox(height: 14),
+                              GestureDetector(
+                                onTap: () => controller.loadProducts(),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 28, vertical: 12),
+                                  decoration: ShapeDecoration(
+                                    color: const Color(0xFF1F3A5F),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                  ),
+                                  child: MyText(
+                                    text: "Retry",
+                                    size: 14,
+                                    weight: FontWeight.w600,
+                                    color: kQuaternaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     );
