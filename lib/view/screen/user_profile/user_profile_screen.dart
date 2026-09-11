@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:castyourcare/config/constants/app_sizes.dart';
 import 'package:castyourcare/view/custom/common_image_view_widget.dart';
 import 'package:castyourcare/view/custom/my_text_widget.dart';
 import 'package:castyourcare/view/screen/user_profile/help_support_screen.dart';
 import 'package:castyourcare/view/screen/user_profile/privacy_policy_screen.dart';
+import 'package:castyourcare/view/screen/user_profile/profile_bottom_sheet/account_recovery_sheet.dart';
 import 'package:castyourcare/view/screen/user_profile/profile_bottom_sheet/edit_profile_sheet.dart';
 import 'package:castyourcare/view/screen/user_profile/profile_bottom_sheet/profile_bottom_sheet_screen.dart';
 import 'package:castyourcare/view/screen/user_profile/term_and_condition_screen.dart';
@@ -69,6 +73,20 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 MyText(text: "User Profile", size: 24, weight: FontWeight.w600),
                 const SizedBox(height: 10),
                 _profileCard(),
+                const SizedBox(height: 15),
+                MyText(
+                  text: "ACCOUNT",
+                  size: 12,
+                  weight: FontWeight.w600,
+                  color: kTextColor,
+                ),
+                const SizedBox(height: 10),
+                buildSupportCard(
+                  onTap: () => AccountRecoverySheet.open(),
+                  title: "Sync Across Devices",
+                  imagePath: Assets.imagesPpff,
+                  arrowPath: Assets.svgArrowForward,
+                ),
                 const SizedBox(height: 15),
                 MyText(
                   text: "GENERAL SETTINGS",
@@ -140,6 +158,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         final profile = Map<String, dynamic>.from(data['profile'] ?? {});
         final name = (profile['name'] ?? '') as String;
         final email = (profile['email'] ?? '') as String;
+        final photo = (profile['photo'] ?? '') as String;
 
         // Show the entered name as the title (fall back to username), and the
         // email (or "member since") as the subtitle.
@@ -159,7 +178,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ),
             child: Row(
               children: [
-                CommonImageView(imagePath: Assets.imagesPpff, height: 45),
+                _cardAvatar(photo),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -190,6 +209,27 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         );
       },
     );
+  }
+
+  /// Profile-card avatar: the saved photo when set, otherwise the placeholder.
+  Widget _cardAvatar(String photo) {
+    Uint8List? bytes;
+    if (photo.isNotEmpty) {
+      try {
+        bytes = base64Decode(photo);
+      } catch (_) {}
+    }
+    if (bytes != null) {
+      return ClipOval(
+        child: Image.memory(
+          bytes,
+          width: 45,
+          height: 45,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+    return CommonImageView(imagePath: Assets.imagesPpff, height: 45);
   }
 
   Widget _toggleCard({

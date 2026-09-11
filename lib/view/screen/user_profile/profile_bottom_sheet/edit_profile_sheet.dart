@@ -1,13 +1,18 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:castyourcare/view/custom/my_textfeild.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../config/constants/app_colors.dart';
 import '../../../../data/services/user_repository.dart';
 import '../../../custom/my_text_widget.dart';
 
-/// Bottom sheet to add/edit profile details, saved to Firestore
-/// under users/{uid}.profile. Opened by tapping the profile card.
+/// Bottom sheet to add/edit profile details (photo, name, email, phone),
+/// saved to Firestore under users/{uid}.profile. Opened by tapping the
+/// profile card.
 class EditProfileSheet {
   static void open() {
     Get.bottomSheet(
@@ -29,6 +34,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   final _name = TextEditingController();
   final _email = TextEditingController();
   final _phone = TextEditingController();
+  String _photo = ''; // base64-encoded, downsized JPEG
   bool _loading = true;
   bool _saving = false;
 
@@ -44,6 +50,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     _name.text = (p['name'] ?? '') as String;
     _email.text = (p['email'] ?? '') as String;
     _phone.text = (p['phone'] ?? '') as String;
+    _photo = (p['photo'] ?? '') as String;
     setState(() => _loading = false);
   }
 
@@ -55,6 +62,29 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        // Downsize + compress at pick time so the stored image stays tiny
+        // (well under Firestore's 1MB document limit).
+        maxWidth: 400,
+        maxHeight: 400,
+        imageQuality: 55,
+      );
+      if (picked == null) return;
+      final bytes = await picked.readAsBytes();
+      if (!mounted) return;
+      setState(() => _photo = base64Encode(bytes));
+    } catch (e) {
+      Get.snackbar(
+        "Couldn't add photo",
+        "Please try a different image.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
   Future<void> _save() async {
     FocusScope.of(context).unfocus();
     setState(() => _saving = true);
@@ -62,6 +92,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
       'name': _name.text.trim(),
       'email': _email.text.trim(),
       'phone': _phone.text.trim(),
+      'photo': _photo,
     });
     if (!mounted) return;
     setState(() => _saving = false);
@@ -73,7 +104,6 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
-      // Don't claim success when the write failed.
       Get.snackbar(
         "Couldn't save",
         "Please check your connection and try again.",
@@ -123,6 +153,8 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else ...[
+              Center(child: _avatar()),
+              const SizedBox(height: 20),
               MyTextField(controller: _name, label: "Full Name"),
               MyTextField(
                 controller: _email,
@@ -169,6 +201,43 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
             const SizedBox(height: 10),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _avatar() {
+    Uint8List? bytes;
+    if (_photo.isNotEmpty) {
+      try {
+        bytes = base64Decode(_photo);
+      } catch (_) {}
+    }
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Stack(
+        children: [
+          CircleAvatar(
+            radius: 46,
+            backgroundColor: kQuaternaryColor,
+            backgroundImage: bytes != null ? MemoryImage(bytes) : null,
+            child: bytes == null
+                ? const Icon(Icons.person, size: 46, color: kTextColor)
+                : null,
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(7),
+              decoration: const BoxDecoration(
+                color: Color(0xFF1F3A5F),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.camera_alt,
+                  size: 16, color: Colors.white),
+            ),
+          ),
+        ],
       ),
     );
   }

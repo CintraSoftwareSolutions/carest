@@ -1,17 +1,30 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 import '../models/models.dart';
 import 'session_service.dart';
 
+/// Outcome of a username account-recovery operation.
+enum AccountResult { ok, usernameTaken, notFound, wrongPin, invalid, error }
+
 /// Reads/writes per-device user data under users/{userId}.
 /// NOTE: burden submission text is intentionally NEVER persisted here.
 class UserRepository extends GetxService {
   static UserRepository get to => Get.find();
 
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
   DocumentReference<Map<String, dynamic>> get _userDoc =>
       SessionService.to.userDoc;
+
+  /// Portable, cross-device account snapshots keyed by a chosen username.
+  CollectionReference<Map<String, dynamic>> get _accounts =>
+      _db.collection('accounts');
 
   // ---- Profile / counter ----
 
@@ -36,6 +49,7 @@ class UserRepository extends GetxService {
         {'burdensReleased': FieldValue.increment(1)},
         SetOptions(merge: true),
       );
+      unawaited(_mirrorToAccount());
     } catch (_) {}
   }
 
@@ -60,11 +74,107 @@ class UserRepository extends GetxService {
       await _userDoc
           .set({'profile': profile}, SetOptions(merge: true))
           .timeout(const Duration(seconds: 10));
+      unawaited(_mirrorToAccount());
       return true;
     } catch (e) {
       debugPrint('saveProfile failed: $e');
       return false;
     }
+  }
+
+  // ---- Username account recovery (cross-device) ----
+  //
+  // Anonymous auth gives every device its own uid, so an account can't sign in
+  // on two devices. To let a user re-open their info elsewhere, they can pick a
+  // username + PIN. We store a portable snapshot of their profile at
+  // accounts/{username} (guarded by a hashed PIN). On another device they enter
+  // the same username + PIN and we copy that snapshot into this device's user
+  // doc. Note: this is a lightweight recovery, not high-security auth — the
+  // snapshot is readable by the app's backend rules, so only non-sensitive
+  // profile details belong here.
+
+  // A fixed app-level salt so a leaked hash isn't a bare PIN hash.
+  static const String _pinSalt = 'carest.recovery.v1';
+
+  String _accountId(String username) => username.trim().toLowerCase();
+
+  String _hashPin(String pin) =>
+      sha256.convert(utf8.encode('$_pinSalt:$pin')).toString();
+
+  /// The recovery username set on this device (if any).
+  Future<String?> recoveryUsername() async {
+    final u = await getUser();
+    final v = u['recoveryUsername'];
+    return (v is String && v.isNotEmpty) ? v : null;
+  }
+
+  /// Reserves [username] for cross-device recovery and stores a PIN-protected
+  /// snapshot of the current profile + counter.
+  Future<AccountResult> setupRecovery(String username, String pin) async {
+    final id = _accountId(username);
+    if (id.length < 3 || pin.trim().length < 4) return AccountResult.invalid;
+    try {
+      final ref = _accounts.doc(id);
+      final myUid = SessionService.to.userId;
+      final existing = await ref.get().timeout(const Duration(seconds: 10));
+      if (existing.exists && existing.data()?['ownerUid'] != myUid) {
+        return AccountResult.usernameTaken;
+      }
+      final user = await getUser();
+      await ref.set({
+        'ownerUid': myUid,
+        'pinHash': _hashPin(pin.trim()),
+        'profile': user['profile'] ?? <String, dynamic>{},
+        'burdensReleased': user['burdensReleased'] ?? 0,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }).timeout(const Duration(seconds: 10));
+      await _userDoc.set({'recoveryUsername': id}, SetOptions(merge: true));
+      return AccountResult.ok;
+    } catch (e) {
+      debugPrint('setupRecovery failed: $e');
+      return AccountResult.error;
+    }
+  }
+
+  /// Re-opens an account on THIS device: verifies username + PIN and copies the
+  /// stored snapshot into this device's user doc.
+  Future<AccountResult> restoreAccount(String username, String pin) async {
+    final id = _accountId(username);
+    if (id.length < 3 || pin.trim().isEmpty) return AccountResult.invalid;
+    try {
+      final snap = await _accounts.doc(id).get().timeout(
+            const Duration(seconds: 10),
+          );
+      if (!snap.exists) return AccountResult.notFound;
+      final data = snap.data()!;
+      if (data['pinHash'] != _hashPin(pin.trim())) {
+        return AccountResult.wrongPin;
+      }
+      await _userDoc.set({
+        'profile': data['profile'] ?? <String, dynamic>{},
+        'burdensReleased': data['burdensReleased'] ?? 0,
+        'recoveryUsername': id,
+      }, SetOptions(merge: true));
+      return AccountResult.ok;
+    } catch (e) {
+      debugPrint('restoreAccount failed: $e');
+      return AccountResult.error;
+    }
+  }
+
+  /// If recovery is set up, mirror the latest profile + counter to the account
+  /// snapshot so another device can pull the current data.
+  Future<void> _mirrorToAccount() async {
+    try {
+      final u = await getUser();
+      final username = u['recoveryUsername'];
+      if (username is! String || username.isEmpty) return;
+      await _accounts.doc(username).set({
+        'profile': u['profile'] ?? <String, dynamic>{},
+        'burdensReleased': u['burdensReleased'] ?? 0,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (_) {}
   }
 
   Future<Map<String, dynamic>> getProfile() async {

@@ -18,7 +18,18 @@ service cloud.firestore {
         'settings',
         'deliveryInfo',
         'splashRotationIndex',
-        'profile'
+        'profile',
+        'recoveryUsername'
+      ]);
+    }
+
+    // A portable, PIN-protected profile snapshot so a user can re-open their
+    // account on another device via a chosen username. Only non-sensitive
+    // profile details live here; any signed-in (anonymous) user may read/write,
+    // and the client gates access with the PIN. Usernames can't be deleted.
+    function validAccountDoc() {
+      return request.resource.data.keys().hasOnly([
+        'ownerUid', 'pinHash', 'profile', 'burdensReleased', 'updatedAt'
       ]);
     }
 
@@ -30,6 +41,12 @@ service cloud.firestore {
     match /products/{doc}       { allow read: if true; allow write: if false; }
     match /faqs/{doc}           { allow read: if true; allow write: if false; }
     match /legal/{doc}          { allow read: if true; allow write: if false; }
+
+    match /accounts/{username} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && validAccountDoc();
+      allow delete: if false;
+    }
 
     // Per-device anonymous user data. Burden text is intentionally not allowed.
     match /users/{userId} {
