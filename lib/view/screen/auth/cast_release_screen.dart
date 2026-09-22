@@ -41,12 +41,26 @@ class _CastReleaseScreenState extends State<CastReleaseScreen> {
   // A single message per release, chosen once (changes every time you release).
   late String _quote;
 
+  // Keep the first note on screen for at least this long so it can be read
+  // before the personalized AI reflection swaps in.
+  static const Duration _firstNoteMinDisplay = Duration(seconds: 4);
+  final DateTime _shownAt = DateTime.now();
+
   @override
   void initState() {
     super.initState();
     _quote = _fallbackQuotes[Random().nextInt(_fallbackQuotes.length)];
     _recordRelease();
     _loadQuote();
+  }
+
+  /// Waits out the remainder of [_firstNoteMinDisplay] (if any) so a new note
+  /// never replaces the first one too quickly.
+  Future<void> _holdFirstNote() async {
+    final remaining = _firstNoteMinDisplay - DateTime.now().difference(_shownAt);
+    if (remaining > Duration.zero) {
+      await Future.delayed(remaining);
+    }
   }
 
   /// The ONLY thing persisted on a cast: increment the released counter.
@@ -62,7 +76,10 @@ class _CastReleaseScreenState extends State<CastReleaseScreen> {
       // Prefer a personalized AI comfort line when available.
       if (widget.burden.trim().isNotEmpty) {
         final line = await AiService.to.comfortLine(widget.burden);
-        if (line != null && line.isNotEmpty && mounted) {
+        if (line != null && line.isNotEmpty) {
+          // Let the first note breathe before the AI reflection replaces it.
+          await _holdFirstNote();
+          if (!mounted) return;
           setState(() => _quote = line);
           return;
         }
@@ -71,7 +88,9 @@ class _CastReleaseScreenState extends State<CastReleaseScreen> {
       final quotes = await ContentRepository.to.getReleaseQuotes();
       final list =
           quotes.map((q) => q.text).where((t) => t.isNotEmpty).toList();
-      if (list.isNotEmpty && mounted) {
+      if (list.isNotEmpty) {
+        await _holdFirstNote();
+        if (!mounted) return;
         setState(() => _quote = list[Random().nextInt(list.length)]);
       }
     } catch (_) {}

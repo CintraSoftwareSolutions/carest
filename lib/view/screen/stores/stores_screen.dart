@@ -35,7 +35,7 @@ class StoresScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           MyText(
-                            text: "Cast Your Cares Shop",
+                            text: "Carest Shop",
                             size: 24,
                             weight: FontWeight.w600,
                           ),
