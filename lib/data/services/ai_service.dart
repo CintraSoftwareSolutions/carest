@@ -75,34 +75,34 @@ class AiService extends GetxService {
     if (RegExp(r'job|work|career|money|financ|provision|bill|debt|income')
         .hasMatch(lower)) {
       return [
-        'I give God my work and finances, and trust Him to provide.',
+        'I give Jesus my work and finances, and trust Him to provide.',
         'I place my need for provision in His hands.',
       ];
     }
     if (RegExp(r'health|sick|ill|pain|heal|anxi|fear|afraid|scared|worry|stress|overwhelm')
         .hasMatch(lower)) {
       return [
-        'I hand God my fears and the things I can’t control.',
-        'I trust God with my health and my peace of mind.',
+        'I hand Jesus my fears and the things I can’t control.',
+        'I trust Jesus with my health and my peace of mind.',
       ];
     }
     if (RegExp(r'family|kid|child|son|daughter|marriage|husband|wife|relationship|friend|parent')
         .hasMatch(lower)) {
       return [
-        'I place the people I love in God’s care.',
-        'I trust God with my relationships and those close to me.',
+        'I place the people I love in Jesus’ care.',
+        'I trust Jesus with my relationships and those close to me.',
       ];
     }
     if (RegExp(r'future|plan|uncertain|unknown|tomorrow|decision|direction|purpose')
         .hasMatch(lower)) {
       return [
-        'I surrender my uncertain future to God.',
-        'I trust God with what lies ahead, one day at a time.',
+        'I surrender my uncertain future to Jesus.',
+        'I trust Jesus with what lies ahead, one day at a time.',
       ];
     }
     return [
-      'I place this burden in God’s hands.',
-      'I trust God with what’s weighing on my heart.',
+      'I place this burden in Jesus’ hands.',
+      'I trust Jesus with what’s weighing on my heart.',
     ];
   }
 }

@@ -85,7 +85,7 @@ class Welcome2Screen extends StatelessWidget {
                 const SizedBox(height: 10),
                 buildInfoCard(
                   onTap: () {},
-                  title: "Give your worries to God",
+                  title: "Give your worries to Jesus",
                   iconPath: Assets.svgT,
                 ),
                 const SizedBox(height: 80),

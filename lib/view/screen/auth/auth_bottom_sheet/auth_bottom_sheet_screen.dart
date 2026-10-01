@@ -153,7 +153,7 @@ class _CastCareSheetState extends State<_CastCareSheet> {
                 ),
                 const SizedBox(height: 5),
                 MyText(
-                  text: "Tell God what’s on your heart cast your cares on Him.",
+                  text: "Tell Jesus what’s on your heart cast your cares on Him.",
                   size: 14,
                   weight: FontWeight.w600,
                   color: kTextColor,

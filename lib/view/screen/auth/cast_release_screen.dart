@@ -26,16 +26,16 @@ class CastReleaseScreen extends StatefulWidget {
 
 class _CastReleaseScreenState extends State<CastReleaseScreen> {
   static const List<String> _fallbackQuotes = [
-    "It’s in God’s hands now. Rest.",
-    "Let it go. Breathe. God is with you.",
-    "You’ve given it to God. Rest in His care.",
+    "It’s in Jesus’ hands now. Rest.",
+    "Let it go. Breathe. Jesus is with you.",
+    "You’ve given it to Jesus. Rest in His care.",
     "It’s been released. You don’t have to carry it anymore.",
     "Your cares are in His hands now. He cares for you.",
-    "Your cares have been lifted. Trust that God is holding them now.",
+    "Your cares have been lifted. Trust that Jesus is holding them now.",
     "It rests in His hands now. So can you.",
     "Your burdens are in His hands. Be still and rest.",
     "What you carried is now in His care. Rest.",
-    "You gave it to God. You don’t have to carry it anymore.",
+    "You gave it to Jesus. You don’t have to carry it anymore.",
   ];
 
   // A single message per release, chosen once (changes every time you release).

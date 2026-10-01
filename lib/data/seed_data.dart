@@ -1,7 +1,7 @@
 /// Canonical seed content for the app. Used both to populate Firestore
 /// (first run) and as an offline fallback if Firestore is unreachable.
 class SeedData {
-  static const int contentVersion = 2;
+  static const int contentVersion = 3;
 
   static const List<Map<String, dynamic>> scriptures = [
     {
@@ -57,13 +57,13 @@ class SeedData {
   static const List<Map<String, dynamic>> breathQuotes = [
     {
       'id': 'b1',
-      'text': 'Cast this into God’s hands—He cares for you.',
+      'text': 'Cast this into Jesus’ hands—He cares for you.',
       'order': 0,
     },
     {'id': 'b2', 'text': 'You don’t have to carry this alone.', 'order': 1},
     {
       'id': 'b3',
-      'text': 'Place this into God’s hands—He cares for you.',
+      'text': 'Place this into Jesus’ hands—He cares for you.',
       'order': 2,
     },
     {
@@ -73,27 +73,27 @@ class SeedData {
     },
     {
       'id': 'b5',
-      'text': 'You don’t have to carry this—God is with you in it.',
+      'text': 'You don’t have to carry this—Jesus is with you in it.',
       'order': 4,
     },
     {
       'id': 'b6',
-      'text': 'Surrender this to God—He is faithful to carry what you cannot.',
+      'text': 'Surrender this to Jesus—He is faithful to carry what you cannot.',
       'order': 5,
     },
     {
       'id': 'b7',
-      'text': 'Rest this in God’s hands—He sees you and cares deeply.',
+      'text': 'Rest this in Jesus’ hands—He sees you and cares deeply.',
       'order': 6,
     },
   ];
 
   static const List<Map<String, dynamic>> releaseQuotes = [
-    {'id': 'r1', 'text': 'It’s in God’s hands now. Rest.', 'order': 0},
-    {'id': 'r2', 'text': 'Let it go. Breathe. God is with you.', 'order': 1},
+    {'id': 'r1', 'text': 'It’s in Jesus’ hands now. Rest.', 'order': 0},
+    {'id': 'r2', 'text': 'Let it go. Breathe. Jesus is with you.', 'order': 1},
     {
       'id': 'r3',
-      'text': 'You’ve given it to God. Rest in His care.',
+      'text': 'You’ve given it to Jesus. Rest in His care.',
       'order': 2,
     },
     {
@@ -109,7 +109,7 @@ class SeedData {
     {
       'id': 'r6',
       'text':
-          'Your cares have been lifted. Trust that God is holding them now.',
+          'Your cares have been lifted. Trust that Jesus is holding them now.',
       'order': 5,
     },
     {'id': 'r7', 'text': 'It rests in His hands now. So can you.', 'order': 6},
@@ -125,7 +125,7 @@ class SeedData {
     },
     {
       'id': 'r10',
-      'text': 'You gave it to God. You don’t have to carry it anymore.',
+      'text': 'You gave it to Jesus. You don’t have to carry it anymore.',
       'order': 9,
     },
   ];
@@ -137,7 +137,7 @@ class SeedData {
       'price': 12.99,
       'shortDesc': 'A daily reminder to release your worries & trust in Him.',
       'description':
-          'Start your day with a gentle reminder that you don’t have to carry everything on your own. The Cast Your Cares Mug is more than just a cup—it’s a moment of peace in your daily routine. Designed with simplicity and meaning, this mug features the powerful message from Psalms 55:22, encouraging you to release your worries and trust in God’s care.',
+          'Start your day with a gentle reminder that you don’t have to carry everything on your own. The Cast Your Cares Mug is more than just a cup—it’s a moment of peace in your daily routine. Designed with simplicity and meaning, this mug features the powerful message from Psalms 55:22, encouraging you to release your worries and trust in Jesus’ care.',
       'imageUrl': 'assets/images/group1.png',
       'storeName': 'Castcares.com',
       'storeUrl': 'https://castcares.com',
@@ -161,7 +161,7 @@ class SeedData {
       'price': 9.99,
       'shortDesc': 'Space to reflect, pray, and let go each day.',
       'description':
-          'A guided prayer journal with space to reflect, give thanks, and lay down your burdens before God each day.',
+          'A guided prayer journal with space to reflect, give thanks, and lay down your burdens before Jesus each day.',
       'imageUrl': 'assets/images/group3.png',
       'storeName': 'Castcares.com',
       'storeUrl': 'https://castcares.com',
@@ -173,7 +173,7 @@ class SeedData {
       'price': 4.99,
       'shortDesc': 'Faith-filled stickers for your everyday things.',
       'description':
-          'A pack of faith-filled stickers to decorate your journal, laptop, or water bottle with gentle reminders of God’s care.',
+          'A pack of faith-filled stickers to decorate your journal, laptop, or water bottle with gentle reminders of Jesus’ care.',
       'imageUrl': 'assets/images/group1.png',
       'storeName': 'Castcares.com',
       'storeUrl': 'https://castcares.com',
@@ -186,7 +186,7 @@ class SeedData {
       'id': 'f1',
       'question': 'What is Cast Your Care?',
       'answer':
-          'Cast Your Care (Carest) is a faith-based space to symbolically release your fears, worries, and burdens to God. Write what’s on your heart, cast it, and let it go—nothing you write is ever stored.',
+          'Cast Your Care (Carest) is a faith-based space to symbolically release your fears, worries, and burdens to Jesus. Write what’s on your heart, cast it, and let it go—nothing you write is ever stored.',
       'order': 0,
     },
     {

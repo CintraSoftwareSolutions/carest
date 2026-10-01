@@ -26,13 +26,24 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: AppSizes.DEFAULT,
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              CommonImageView(imagePath: Assets.imagesCarest,height: 90,),
+      // Use the same soft wavy background as the scripture screen so the
+      // first page matches the second and feels uniform.
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(Assets.imagesWcbg),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: AppSizes.DEFAULT,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                CommonImageView(imagePath: Assets.imagesCarest,height: 90,),
                Spacer(),
               CommonImageView(imagePath: Assets.imagesGroup1,),
               Spacer(),
@@ -44,13 +55,13 @@ class WelcomeScreen extends StatelessWidget {
 
               ),
               SizedBox(height: 10,),
-              MyText(text: "When life feels heavy, tell God what’s on your heart\nand cast your cares on Him.\n"
+              MyText(text: "When life feels heavy, tell Jesus what’s on your heart\nand cast your cares on Him.\n"
                   "Your cares and prayers are never stored in this app.",
                 textAlign: TextAlign.center,
-                size: 14,
-                weight: FontWeight.w500,
-                lineHeight: 1.71,
-                color: kTextColor,
+                size: 16,
+                weight: FontWeight.w600,
+                lineHeight: 1.5,
+                color: kBlackLightColor,
 
               ),
               Spacer(),
@@ -61,6 +72,7 @@ class WelcomeScreen extends StatelessWidget {
 
             ],
           ),
+        ),
         ),
       ),
     );
