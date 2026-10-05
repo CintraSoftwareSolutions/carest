@@ -89,11 +89,11 @@ class SeedData {
   ];
 
   static const List<Map<String, dynamic>> releaseQuotes = [
-    {'id': 'r1', 'text': 'It’s in Jesus’ hands now. Rest.', 'order': 0},
+    {'id': 'r1', 'text': 'It’s in God’s hands now. Rest.', 'order': 0},
     {'id': 'r2', 'text': 'Let it go. Breathe. Jesus is with you.', 'order': 1},
     {
       'id': 'r3',
-      'text': 'You’ve given it to Jesus. Rest in His care.',
+      'text': 'You’ve given it to God. Rest in His care.',
       'order': 2,
     },
     {
@@ -125,7 +125,7 @@ class SeedData {
     },
     {
       'id': 'r10',
-      'text': 'You gave it to Jesus. You don’t have to carry it anymore.',
+      'text': 'You gave it to God. You don’t have to carry it anymore.',
       'order': 9,
     },
   ];
