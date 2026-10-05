@@ -37,12 +37,14 @@ exports.generateAiReflection = onCall(
 
       const prompt = mode === "comfort" ?
         "Write ONE short comforting sentence (max ~14 words) reassuring a " +
-          "Christian that Jesus is holding this specific worry. No scripture " +
+          "Christian that God is holding this specific worry. Address it to " +
+          "either God or Jesus (choose one naturally). No scripture " +
           "reference. Return ONLY JSON: {\"line\":\"...\"}\n\nThe worry: \"" +
           burden + "\"" :
         "A person using a Christian faith app wrote what is weighing on their " +
           "heart. Gently rephrase it into exactly 2 short first-person " +
-          "reflections (max ~14 words each) they can surrender to Jesus. Warm, " +
+          "reflections (max ~14 words each) they can surrender in prayer. " +
+          "Address one reflection to God and the other to Jesus. Warm, " +
           "calm, non-clinical. No advice or scripture. Return ONLY JSON: " +
           "{\"suggestions\":[\"...\",\"...\"]}\n\nWhat they wrote: \"" +
           burden + "\"";

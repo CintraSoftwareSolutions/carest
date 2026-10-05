@@ -55,7 +55,7 @@ class WelcomeScreen extends StatelessWidget {
 
               ),
               SizedBox(height: 10,),
-              MyText(text: "When life feels heavy, tell Jesus what’s on your heart\nand cast your cares on Him.\n"
+              MyText(text: "When life feels heavy, tell God what’s on your heart and cast your cares on Him.\n"
                   "Your cares and prayers are never stored in this app.",
                 textAlign: TextAlign.center,
                 size: 16,
