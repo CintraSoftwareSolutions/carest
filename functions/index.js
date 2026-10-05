@@ -35,12 +35,13 @@ exports.generateAiReflection = onCall(
       const mode = String((request.data && request.data.mode) || "suggestions");
       if (!burden) return {suggestions: [], line: null};
 
+      // Alternate the divine name roughly half-and-half across reflections.
+      const deity = Math.random() < 0.5 ? "God" : "Jesus";
       const prompt = mode === "comfort" ?
         "Write ONE short comforting sentence (max ~14 words) reassuring a " +
-          "Christian that God is holding this specific worry. Address it to " +
-          "either God or Jesus (choose one naturally). No scripture " +
-          "reference. Return ONLY JSON: {\"line\":\"...\"}\n\nThe worry: \"" +
-          burden + "\"" :
+          "Christian that " + deity + " is holding this specific worry. No " +
+          "scripture reference. Return ONLY JSON: {\"line\":\"...\"}\n\n" +
+          "The worry: \"" + burden + "\"" :
         "A person using a Christian faith app wrote what is weighing on their " +
           "heart. Gently rephrase it into exactly 2 short first-person " +
           "reflections (max ~14 words each) they can surrender in prayer. " +

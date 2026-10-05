@@ -23,13 +23,13 @@ class ReleaseScreen extends StatefulWidget {
 class _ReleaseScreenState extends State<ReleaseScreen>
     with TickerProviderStateMixin {
   List<String> messages = [
-    "Cast this into Jesus' hands—He cares for you.",
+    "Cast this into God's hands—He cares for you.",
     "You don't have to carry this alone.",
     "Place this into Jesus' hands—He cares for you.",
     "Cast this upon Him, for He cares for you.",
-    "You don't have to carry this—Jesus is with you in it.",
+    "You don't have to carry this—God is with you in it.",
     "Surrender this to Jesus—He is faithful to carry what you cannot.",
-    "Rest this in Jesus' hands—He sees you and cares deeply.",
+    "Rest this in God's hands—He sees you and cares deeply.",
   ];
 
   late AnimationController _rotationController;

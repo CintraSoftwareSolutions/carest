@@ -57,7 +57,7 @@ class SeedData {
   static const List<Map<String, dynamic>> breathQuotes = [
     {
       'id': 'b1',
-      'text': 'Cast this into Jesus’ hands—He cares for you.',
+      'text': 'Cast this into God’s hands—He cares for you.',
       'order': 0,
     },
     {'id': 'b2', 'text': 'You don’t have to carry this alone.', 'order': 1},
@@ -73,7 +73,7 @@ class SeedData {
     },
     {
       'id': 'b5',
-      'text': 'You don’t have to carry this—Jesus is with you in it.',
+      'text': 'You don’t have to carry this—God is with you in it.',
       'order': 4,
     },
     {
@@ -83,7 +83,7 @@ class SeedData {
     },
     {
       'id': 'b7',
-      'text': 'Rest this in Jesus’ hands—He sees you and cares deeply.',
+      'text': 'Rest this in God’s hands—He sees you and cares deeply.',
       'order': 6,
     },
   ];
