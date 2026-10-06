@@ -55,79 +55,36 @@ class SeedData {
   ];
 
   static const List<Map<String, dynamic>> breathQuotes = [
-    {
-      'id': 'b1',
-      'text': 'Cast this into God’s hands—He cares for you.',
-      'order': 0,
-    },
-    {'id': 'b2', 'text': 'You don’t have to carry this alone.', 'order': 1},
-    {
-      'id': 'b3',
-      'text': 'Place this into Jesus’ hands—He cares for you.',
-      'order': 2,
-    },
-    {
-      'id': 'b4',
-      'text': 'Cast this upon Him, for He cares for you.',
-      'order': 3,
-    },
-    {
-      'id': 'b5',
-      'text': 'You don’t have to carry this—God is with you in it.',
-      'order': 4,
-    },
-    {
-      'id': 'b6',
-      'text': 'Surrender this to Jesus—He is faithful to carry what you cannot.',
-      'order': 5,
-    },
-    {
-      'id': 'b7',
-      'text': 'Rest this in God’s hands—He sees you and cares deeply.',
-      'order': 6,
-    },
+    {'id': 'b1', 'text': 'Cast this into God’s hands—He cares for you.', 'order': 0},
+    {'id': 'b2', 'text': 'Cast this into Jesus’ hands—He cares for you.', 'order': 1},
+    {'id': 'b3', 'text': 'Place this into God’s hands—He cares for you.', 'order': 2},
+    {'id': 'b4', 'text': 'Place this into Jesus’ hands—He cares for you.', 'order': 3},
+    {'id': 'b5', 'text': 'You don’t have to carry this—God is with you in it.', 'order': 4},
+    {'id': 'b6', 'text': 'You don’t have to carry this—Jesus is with you in it.', 'order': 5},
+    {'id': 'b7', 'text': 'Surrender this to God—He is faithful to carry what you cannot.', 'order': 6},
+    {'id': 'b8', 'text': 'Surrender this to Jesus—He is faithful to carry what you cannot.', 'order': 7},
+    {'id': 'b9', 'text': 'Rest this in God’s hands—He sees you and cares deeply.', 'order': 8},
+    {'id': 'b10', 'text': 'Rest this in Jesus’ hands—He sees you and cares deeply.', 'order': 9},
+    {'id': 'b11', 'text': 'You don’t have to carry this alone.', 'order': 10},
+    {'id': 'b12', 'text': 'Cast this upon Him, for He cares for you.', 'order': 11},
   ];
 
   static const List<Map<String, dynamic>> releaseQuotes = [
     {'id': 'r1', 'text': 'It’s in God’s hands now. Rest.', 'order': 0},
-    {'id': 'r2', 'text': 'Let it go. Breathe. Jesus is with you.', 'order': 1},
-    {
-      'id': 'r3',
-      'text': 'You’ve given it to God. Rest in His care.',
-      'order': 2,
-    },
-    {
-      'id': 'r4',
-      'text': 'It’s been released. You don’t have to carry it anymore.',
-      'order': 3,
-    },
-    {
-      'id': 'r5',
-      'text': 'Your cares are in His hands now. He cares for you.',
-      'order': 4,
-    },
-    {
-      'id': 'r6',
-      'text':
-          'Your cares have been lifted. Trust that Jesus is holding them now.',
-      'order': 5,
-    },
-    {'id': 'r7', 'text': 'It rests in His hands now. So can you.', 'order': 6},
-    {
-      'id': 'r8',
-      'text': 'Your burdens are in His hands. Be still and rest.',
-      'order': 7,
-    },
-    {
-      'id': 'r9',
-      'text': 'What you carried is now in His care. Rest.',
-      'order': 8,
-    },
-    {
-      'id': 'r10',
-      'text': 'You gave it to God. You don’t have to carry it anymore.',
-      'order': 9,
-    },
+    {'id': 'r2', 'text': 'It’s in Jesus’ hands now. Rest.', 'order': 1},
+    {'id': 'r3', 'text': 'Let it go. Breathe. God is with you.', 'order': 2},
+    {'id': 'r4', 'text': 'Let it go. Breathe. Jesus is with you.', 'order': 3},
+    {'id': 'r5', 'text': 'You’ve given it to God. Rest in His care.', 'order': 4},
+    {'id': 'r6', 'text': 'You’ve given it to Jesus. Rest in His care.', 'order': 5},
+    {'id': 'r7', 'text': 'Your cares have been lifted. Trust that God is holding them now.', 'order': 6},
+    {'id': 'r8', 'text': 'Your cares have been lifted. Trust that Jesus is holding them now.', 'order': 7},
+    {'id': 'r9', 'text': 'You gave it to God. You don’t have to carry it anymore.', 'order': 8},
+    {'id': 'r10', 'text': 'You gave it to Jesus. You don’t have to carry it anymore.', 'order': 9},
+    {'id': 'r11', 'text': 'It’s been released. You don’t have to carry it anymore.', 'order': 10},
+    {'id': 'r12', 'text': 'Your cares are in His hands now. He cares for you.', 'order': 11},
+    {'id': 'r13', 'text': 'It rests in His hands now. So can you.', 'order': 12},
+    {'id': 'r14', 'text': 'Your burdens are in His hands. Be still and rest.', 'order': 13},
+    {'id': 'r15', 'text': 'What you carried is now in His care. Rest.', 'order': 14},
   ];
 
   static const List<Map<String, dynamic>> products = [
